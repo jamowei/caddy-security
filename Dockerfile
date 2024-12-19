@@ -38,8 +38,9 @@ RUN set -eux; \
 	wget -O /etc/caddy/Caddyfile "https://github.com/caddyserver/dist/raw/33ae08ff08d168572df2956ed14fbc4949880d94/config/Caddyfile"; \
 	wget -O /usr/share/caddy/index.html "https://github.com/caddyserver/dist/raw/33ae08ff08d168572df2956ed14fbc4949880d94/welcome/index.html"
 
-WORKDIR /srv
-COPY --from=build /build/caddy caddy
+COPY --from=build /build/caddy /usr/bin/caddy
+
+RUN chmod +x /usr/bin/caddy
 
 ENV XDG_CONFIG_HOME /config
 ENV XDG_DATA_HOME /data
@@ -59,4 +60,6 @@ EXPOSE 443
 EXPOSE 443/udp
 EXPOSE 2019
 
-CMD ["./caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+WORKDIR /srv
+
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

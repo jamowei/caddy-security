@@ -5,7 +5,7 @@ ARG ALPINE_VERSION=3.20
 #################################################################
 FROM golang:alpine as build
 
-ARG CADDY_VERSION
+ARG VERSION
 
 WORKDIR /build
 
@@ -13,7 +13,7 @@ WORKDIR /build
 RUN apk update && apk add git
 RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
 # FIXME: use args
-RUN xcaddy build ${CADDY_VERSION} --output caddy --with github.com/greenpau/caddy-security 
+RUN xcaddy build ${VERSION} --output caddy --with github.com/greenpau/caddy-security 
 
 ##################################################################
 ####################### service ##################################
@@ -21,7 +21,7 @@ RUN xcaddy build ${CADDY_VERSION} --output caddy --with github.com/greenpau/cadd
 FROM alpine:${ALPINE_VERSION}
 
 ARG BUILD_DATE
-ARG CADDY_VERSION
+ARG VERSION
 
 RUN apk add --no-cache \
 	ca-certificates \
@@ -44,7 +44,7 @@ COPY --from=build /build/caddy caddy
 ENV XDG_CONFIG_HOME /config
 ENV XDG_DATA_HOME /data
 
-LABEL org.opencontainers.image.version=${CADDY_VERSION}
+LABEL org.opencontainers.image.version=${VERSION}
 LABEL org.opencontainers.image.title="Caddy Security"
 LABEL org.opencontainers.image.description="a powerful, enterprise-ready, open source web server with automatic HTTPS written in Go"
 LABEL org.opencontainers.image.url=https://caddyserver.com

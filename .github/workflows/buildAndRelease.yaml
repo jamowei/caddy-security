@@ -74,3 +74,4 @@ jobs:
           VERSION: ${{ steps.releases.outputs.target }}
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/$NAME:$VERSION
+          docker push ghcr.io/${{ github.repository_owner }}/$NAME:latest

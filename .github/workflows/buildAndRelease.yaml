@@ -46,8 +46,8 @@ jobs:
         env:
             VERSION: ${{ steps.releases.outputs.target }}
         run: |
-          docker build --platform linux/amd64,linux/arm64,linux/arm/v7 --build-arg VERSION=$VERSION --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -t ghcr.io/${{ github.repository_owner }}/$NAME:$VERSION .
-          docker build --platform linux/amd64,linux/arm64,linux/arm/v7 --build-arg VERSION=$VERSION --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -t ghcr.io/${{ github.repository_owner }}/$NAME:latest .
+          docker build --build-arg VERSION=$VERSION --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -t ghcr.io/${{ github.repository_owner }}/$NAME:$VERSION .
+          docker build --build-arg VERSION=$VERSION --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -t ghcr.io/${{ github.repository_owner }}/$NAME:latest .
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

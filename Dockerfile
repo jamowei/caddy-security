@@ -13,7 +13,7 @@ WORKDIR /build
 RUN apk update && apk add git
 RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
 # FIXME: use args
-RUN xcaddy build v${CADDY_VERSION} --output caddy --with github.com/greenpau/caddy-security 
+RUN xcaddy build ${CADDY_VERSION} --output caddy --with github.com/greenpau/caddy-security 
 
 ##################################################################
 ####################### service ##################################
@@ -44,7 +44,7 @@ COPY --from=build /build/caddy caddy
 ENV XDG_CONFIG_HOME /config
 ENV XDG_DATA_HOME /data
 
-LABEL org.opencontainers.image.version="v${CADDY_VERSION}"
+LABEL org.opencontainers.image.version=${CADDY_VERSION}
 LABEL org.opencontainers.image.title="Caddy Security"
 LABEL org.opencontainers.image.description="a powerful, enterprise-ready, open source web server with automatic HTTPS written in Go"
 LABEL org.opencontainers.image.url=https://caddyserver.com

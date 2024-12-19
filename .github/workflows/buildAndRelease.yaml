@@ -1,0 +1,72 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 0 * * *'
+
+jobs:
+  buildAndRelease:
+    runs-on: ubuntu-latest
+
+    permissions:
+      # needed for creating a release
+      contents: write
+      # needed for pushing docker image
+      attestations: write
+      id-token: write
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Name and Version
+        id: releases
+        run: |
+          sudo apt-get update && sudo apt-get install jq -y
+          THIS_REPO=https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest
+          TARGET_REPO=https://api.github.com/repos/caddyserver/caddy/releases/latest
+          CURRENT_VERSION=current=$(curl $THIS_REPO | jq -r '.tag_name')
+          TARGET_VERSION=$(curl $TARGET_REPO | jq -r '.tag_name')
+          NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}
+          echo "${CURRENT_VERSION}" >> $GITHUB_OUTPUT
+          echo "${TARGET_VERSION}" >> $GITHUB_OUTPUT
+          echo "VERSION=${TARGET_VERSION}" >> $GITHUB_ENV
+          echo "NAME=${NAME}" >> $GITHUB_ENV
+          echo Using name=$NAME, version=$VERSION, current_version=$CURRENT_VERSION
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+        
+      - name: Build Docker image
+        env:
+            VERSION: ${{ steps.releases.outputs.target }}
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/$NAME:$VERSION .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: steps.releases.outputs.current != steps.releases.outputs.target
+        env:
+          VERSION: ${{ steps.releases.outputs.target }}
+        with:
+          name: Update to ${{ steps.releases.outputs.target }}
+          tag_name: ${{ steps.releases.outputs.target }}
+          draft: false
+          prerelease: false
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        if: steps.releases.outputs.current != steps.releases.outputs.target
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push Docker image
+        if: steps.releases.outputs.current != steps.releases.outputs.target
+        env:
+          VERSION: ${{ steps.releases.outputs.target }}
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/$NAME:$VERSION

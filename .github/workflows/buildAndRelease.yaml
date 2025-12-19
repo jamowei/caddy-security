@@ -48,6 +48,7 @@ jobs:
         env:
             VERSION: ${{ steps.releases.outputs.target }}
         run: |
+          docker pull alpine:latest
           docker build --build-arg VERSION=$VERSION --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` -t ghcr.io/${{ github.repository_owner }}/$NAME:$VERSION .
           docker tag ghcr.io/${{ github.repository_owner }}/$NAME:$VERSION ghcr.io/${{ github.repository_owner }}/$NAME:latest
 

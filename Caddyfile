@@ -1,8 +1,9 @@
 {
 	http_port 8080
-	https_port 8443
-	# debug
+ 	https_port 8443
+ 	# debug
 
+    order coraza_waf first
 	order authenticate before respond
 	order authorize before basicauth
 
@@ -53,6 +54,15 @@ auth.myfiosgateway.com {
 }
 
 assetq.myfiosgateway.com {
+	coraza_waf {
+    	load_owasp_crs
+  		directives `
+   			Include @coraza.conf-recommended
+   			Include @crs-setup.conf.example
+   			Include @owasp_crs/*.conf
+   			SecRuleEngine On
+  		`
+ 	}
 	import tls_config
 	authorize with mypolicy
 	root * {env.HOME}/www

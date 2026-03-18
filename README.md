@@ -66,3 +66,24 @@ admin.mydomain.com {
   reverse_proxy admin:8080
 }
 ```
+
+# Using Coraza WAF
+
+[Tutorial](https://github.com/corazawaf/coraza-caddy?tab=readme-ov-file#using-owasp-core-ruleset)
+```
+assetq.myfiosgateway.com {
+	coraza_waf {
+    	load_owasp_crs
+  		directives `
+   			Include @coraza.conf-recommended
+   			Include @crs-setup.conf.example
+   			Include @owasp_crs/*.conf
+   			SecRuleEngine On
+  		`
+ 	}
+	import tls_config
+	authorize with mypolicy
+	root * {env.HOME}/www
+	file_server
+}
+```

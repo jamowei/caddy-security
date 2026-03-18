@@ -13,7 +13,9 @@ WORKDIR /build
 RUN apk update && apk add git
 RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
 # FIXME: use args
-RUN xcaddy build ${VERSION} --output caddy --with github.com/greenpau/caddy-security 
+RUN xcaddy build ${VERSION} --output caddy \
+		--with github.com/greenpau/caddy-security \
+		--with github.com/corazawaf/coraza-caddy/v2
 
 ##################################################################
 ####################### service ##################################

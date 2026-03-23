@@ -1,6 +1,7 @@
 # Caddy Security
 
-Docker image containing [caddy](https://github.com/caddyserver/caddy) and [caddy-security](https://github.com/greenpau/caddy-security).
+Docker image containing [caddy](https://github.com/caddyserver/caddy)
+, [caddy-security](https://github.com/greenpau/caddy-security) and [coraza-waf](https://github.com/corazawaf/coraza-caddy).
 
 # Use Github OIDC
 

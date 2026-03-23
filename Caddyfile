@@ -15,6 +15,7 @@
 			crypto key sign-verify {env.JWT_SHARED_KEY}
 			cookie domain myfiosgateway.com
 			enable identity provider github
+			trust login redirect uri domain suffix myfiosgateway.com:8443 path prefix /
 			ui {
 				links {
 					"My Identity" "/whoami" icon "las la-user"
